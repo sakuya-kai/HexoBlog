@@ -1,0 +1,19 @@
+- class_name: 友情链接
+  class_desc: 那些人，那些事
+  link_list:
+    - name: ZeaLotSean
+      link: https://asuka4every.top/
+      avatar: https://asuka4every.top/images/avatar.jpg
+      descr: 关于夏天的记忆就是浴衣、大海和长泽雅美!|
+    - name: AikikoXHJ
+      link: https://aikikoxhj.github.io/
+      avatar: https://cdn.jsdelivr.net/gh/AikikoXHJ/cloudimg/img/XHJ.jpg
+      descr: 人活着就是为了西瓜！草莓！抹茶！冰淇淋！美少女！|
+
+- class_name: 网站
+  class_desc: 值得推荐的网站
+  link_list:
+    - name: Z-Library
+      link: https://zh.z-lib.org/
+      avatar: https://zh.z-lib.org/favicon.ico
+      descr: 世界上最大的数字图书馆。
