@@ -1,8 +1,9 @@
 ---
 title: 《Lua程序设计》学习笔记
 date: 2021-10-13
-description: 
+description: 菜鸟的Lua学习之路
 cover: https://cdn.jsdelivr.net/gh/sakuya-kai/cloudimg/img/skadi.jpg
+tags: Lua
 ---
 
 ### 命令行执行
@@ -10,7 +11,7 @@ cover: https://cdn.jsdelivr.net/gh/sakuya-kai/cloudimg/img/skadi.jpg
 类型为`table`的全局变量`arg`保存命令行参数，脚本名为`arg[0]`，真正的参数从`arg[1]`开始，而脚本之前则是负数的下标
 
 例如`lua -e "sin=math.sin" script a b`的参数如下
-```
+```lua
 arg[-3] = "lua"
 arg[-2] = "-e"
 arg[-1] = "sin=math.sin"
@@ -35,7 +36,7 @@ arg[2] = "b"
 `Lua`是一个动态类型语言，不用声明变量的类型，每个变量携带自己的类型
 
 `type(v)` 获取`v`的变量类型，返回的是字符串
-```
+```lua
 type(a)             --> nil
 a = 1 type(a)       --> number
 a = "1" type(a)     --> string
@@ -45,7 +46,7 @@ type(type(a))       --> string
 
 #### 逻辑运算符
 
-```
+```lua
 and
 or
 not
@@ -67,49 +68,49 @@ not
 
 `type(num)`只能输出`number`，如果要区分实际的类型，可以用`math.type()`
 
-```
- > math.type(3) 	--> integer
- > math.type(3.0) 	--> float
+```lua
+ math.type(3) 	--> integer
+ math.type(3.0) 	--> float
 ```
 
 #### 算术运算符
 
-```
+```lua
 +
 -
 *
-/		  除法，两个操作数会先转成`float`再运算，保证跟`float`的除法一致
-//  	  整除，两个`integer`结果还是`integer`
+/		  --除法，两个操作数会先转成float再运算，保证跟float的除法一致
+//  	  --整除，会舍弃小数部分，就算两个操作数里面有float类型的数
 %
-^		  幂运算
+^		  --幂运算
 ```
 
 
-```
- > 3.0 / 2.0	--> 1.5
- > 3 / 2 		--> 1.5
+```lua
+ 3.0 / 2.0	--> 1.5
+ 3 / 2 		--> 1.5
  
- > 3 // 2 		--> 1
- > 3.0 // 2 	--> 1.0
- > 6 // 2 		--> 3
- > 6.0 // 2.0 	--> 3.0
- > -9 // 2 		--> -5
- > 1.5 // 0.5 	--> 3.0
+ 3 // 2 		--> 1
+ 3.0 // 2 	--> 1.0
+ 6 // 2 		--> 3
+ 6.0 // 2.0 	--> 3.0
+ -9 // 2 		--> -5
+ 1.5 // 0.5 	--> 3.0
 ```
 
 取模骚操作，获取浮点数精确到几位的数
 
-```
- > x = math.pi
- > x - x % 0.01 	--> 3.14
- > x - x % 0.001 	--> 3.141
+```lua
+ x = math.pi
+ x - x % 0.01 	--> 3.14
+ x - x % 0.001 	--> 3.141
 ```
 
 
 
 #### 关系运算符
 
-```
+```lua
 >
 <
 <=
@@ -122,16 +123,16 @@ not
 
 #### `math`库
 
-```
-math.pi				数字π
-math.huge				最大的number，输出inf
-math.random()			生成[0,1)的数
-math.random(n)			生成[1,n]的数
-math.random(a,b)			生成[a,b]的数
-math.randomseed(os.time())		方便的设置随机种子
-math.maxinteger			最大integer
-math.mininteger			最小integer
-math.tointeger(num)		浮点型转整型，如果不能转换就返回nil
+```lua
+math.pi				--数字π
+math.huge				--最大的number，输出inf
+math.random()			--生成[0,1)的数
+math.random(n)			--生成[1,n]的数
+math.random(a,b)			--生成[a,b]的数
+math.randomseed(os.time())		--方便的设置随机种子
+math.maxinteger			--最大integer
+math.mininteger			--最小integer
+math.tointeger(num)		--浮点型转整型，如果不能转换就返回nil
 ```
 
 `num + 0.0` 整型转浮点型
@@ -139,6 +140,109 @@ math.tointeger(num)		浮点型转整型，如果不能转换就返回nil
 `num | 0` 浮点型转整型，不能有小数部分，且数值大小必须在范围内，否则会报错
 
 浮点型能精确表示的整型范围`[-2^51, 2^51]`
+
+---
+
+### Strings
+
+`Lua`的字符串也是**不可变类型**
+
+字符串的定义用**双引号**和**单引号**都行
+
+长字符串定义，里面的字符串不会被转义，两个`[[`和`]]`之间可以加**任意数量**的`=`，避免`a[b[i]]`这种混乱，可以为0个
+
+```lua
+s = [==[
+abcde
+\n\n
+haha
+]==]
+```
+
+`#s` 取字符串字节长度，注意是字节长度，在不同编码下可能跟字符长度不一样
+
+```lua
+a = "hello"
+print(#a)			--> 5
+print(#"good bye")		--> 8
+print(#"哈哈")		--> 4
+```
+
+`s1 .. s2`拼接字符串，`s1`是`number`类型时，后面必须要跟一个空格，不然编译器会把第一个点当成数字的小数点，从而报错
+
+```lua
+"Hello " .. "World" 	--> Hello World
+"result is " .. 3 		--> result is 3
+1 .. 1			--> 11
+```
+
+#### 字符串与数字的转换
+
+任何算术操作，如果操作数是个字符串，会尝试把字符串转成数字
+
+相反，任何字符串操作，如果操作数是数字，会尝试把数字转成字符串
+
+**注意**：字符串转数字的结果都会转成浮点型`float`
+
+```lua
+"10" + 1 			--> 11.0
+```
+
+显示地把字符串转换成数字
+
+```lua
+tonumber(s)		--默认按10进制转换
+tonumber(" -3 ") 		--> -3
+tonumber(" 10e4 ") 	--> 100000.0
+tonumber("10e") 		--> nil (not a valid number)
+tonumber("0x1.3p-4") 	--> 0.07421875
+
+tonumber(s, base)		--按照指定进制base转换，返回都是10进制，2 <= base <= 32
+tonumber("100101", 2) 	--> 37
+tonumber("fff", 16) 	--> 4095
+tonumber("-ZZ", 36) 	--> -1295
+tonumber("987", 8) 	--> nil
+```
+
+显示地把数字转换成
+
+```lua
+tostring(num)
+```
+
+#### 字符串库
+
+```lua
+string.len(s)		--获取字符串长度，跟#str一样
+string.rep(s, n) 		--重复字符串str n次
+string.reverse(s) 		--反转字符串
+string.lower(s) 		--转大写
+string.upper(s) 		--转小写
+string.sub(s, i, j)	--获取子字符串，[i, j]，闭区间，下标从1开始，可以是负数，-1是最后一个字符，-2是倒数第二个字符，以此类推
+
+s = "[in brackets]"
+string.sub(s, 2, -2) 	--> in brackets
+string.sub(s, 1, 1) 	--> [
+string.sub(s, -1, -1) 	--> ]
+
+string.char(a, b, c,...)	--把数字转换成对应的ASCII字符
+print(string.char(97)) 	--> a
+
+string.byte(s, i)		--把字符串s的第i个字符转成对应的ASCII数字，i参数可选，不填就是转第一个字符
+print(string.byte("abc")) 	--> 97
+print(string.byte("abc", 2)) --> 98
+print(string.byte("abc", -1)) --> 99
+
+string.byte(s, i, j)	--转换[i, j]闭区间的字符串
+print(string.byte("abc", 1, 2)) --> 97 98
+string.byte(s, 1, -1)	--转换所有
+```
+
+
+
+
+
+
 
 
 
